@@ -19,12 +19,13 @@ pipeline {
                         ]]
                     ])
                 }
+                bat 'dir /s /b'  // Verify files are fetched
             }
         }
 
         stage('Build Maven Project') {
             steps {
-                bat 'mvn clean package'  // Use 'bat' instead of 'sh'
+                bat 'mvn clean package'
             }
         }
 
@@ -32,7 +33,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIALS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        bat 'echo %PASSWORD% | docker login -u %USERNAME% --password-stdin'  // Use Windows batch syntax
+                        bat 'echo %PASSWORD% | docker login -u %USERNAME% --password-stdin'
                     }
                 }
             }
@@ -40,13 +41,14 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t %IMAGE_NAME% .'  // Use 'bat' instead of 'sh'
+                bat 'dir /s /b Dockerfile'  // Debugging step
+                bat 'docker build -t %IMAGE_NAME% .'
             }
         }
 
         stage('Docker Push') {
             steps {
-                bat 'docker push %IMAGE_NAME%'  // Use 'bat' instead of 'sh'
+                bat 'docker push %IMAGE_NAME%'
             }
         }
     }
