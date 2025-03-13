@@ -2,14 +2,23 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
-        IMAGE_NAME = 'khyati1997/maven-webapp'  // Replace with your actual Docker Hub username
+        DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'  // Docker Hub credentials
+        GITHUB_CREDENTIALS = 'github-credentials-maven-webapp'  // Correct GitHub credentials
+        IMAGE_NAME = 'khyati1997/maven-webapp'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-username/your-repo.git'  // Replace with your GitHub repo
+                script {
+                    checkout([$class: 'GitSCM',
+                        branches: [[name: '*/main']],
+                        userRemoteConfigs: [[
+                            url: 'https://github.com/Khyati1997/maven-webapp.git',
+                            credentialsId: GITHUB_CREDENTIALS  // Use the correct credentials
+                        ]]
+                    ])
+                }
             }
         }
 
