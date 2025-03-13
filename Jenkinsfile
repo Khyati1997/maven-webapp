@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'  // Docker Hub credentials
-        GITHUB_CREDENTIALS = 'github-credentials-maven-webapp'  // Correct GitHub credentials
+        DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
+        GITHUB_CREDENTIALS = 'github-credentials-maven-webapp'
         IMAGE_NAME = 'khyati1997/maven-webapp'
     }
 
@@ -15,7 +15,7 @@ pipeline {
                         branches: [[name: '*/main']],
                         userRemoteConfigs: [[
                             url: 'https://github.com/Khyati1997/maven-webapp.git',
-                            credentialsId: GITHUB_CREDENTIALS  // Use the correct credentials
+                            credentialsId: GITHUB_CREDENTIALS
                         ]]
                     ])
                 }
@@ -24,7 +24,7 @@ pipeline {
 
         stage('Build Maven Project') {
             steps {
-                sh 'mvn clean package'
+                bat 'mvn clean package'  // Use 'bat' instead of 'sh'
             }
         }
 
@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIALS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
+                        bat 'echo %PASSWORD% | docker login -u %USERNAME% --password-stdin'  // Use Windows batch syntax
                     }
                 }
             }
@@ -40,13 +40,13 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                bat 'docker build -t %IMAGE_NAME% .'  // Use 'bat' instead of 'sh'
             }
         }
 
         stage('Docker Push') {
             steps {
-                sh 'docker push $IMAGE_NAME'
+                bat 'docker push %IMAGE_NAME%'  // Use 'bat' instead of 'sh'
             }
         }
     }
